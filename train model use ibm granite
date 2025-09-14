@@ -1,0 +1,37 @@
+!pip install langchain_community
+!pip install replicate
+
+from langchain_community.llms import Replicate
+import os
+from google.colab import userdata
+# Set the API token
+api_token = userdata.get('api_token')
+os.environ["REPLICATE_API_TOKEN"] = api_token
+# Model setup
+model = "ibm-granite/granite-3.3-8b-instruct"
+output = Replicate(
+model=model,
+replicate_api_token=api_token,
+)
+
+# Define the customer reviews
+customer_reviews = [
+"The battery lasts all day, and the performance is excellent.",
+"The screen is too dim outdoors, but I love the colors indoors.",
+"This phone is slow and keeps crashing when I open certain apps."
+]
+# Refine the prompt to include reviews
+reviews_text = "\n".join([f"Review {i+1}: {review}" for i, review
+in enumerate(customer_reviews)])
+
+prompt = f"""
+Classify these reviews as Positive, Negative, or Mixed:
+{reviews_text}
+"""
+
+# Invoke the model with the example prompt
+response = output.invoke(prompt)
+
+# Print the response
+print("Granite Model Response:\n")
+print(response)
